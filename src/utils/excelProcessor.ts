@@ -12,6 +12,30 @@ const normalizeColumnName = (name: string): string => {
   return normalized;
 };
 
+const cleanNumericValue = (value: any): any => {
+  if (typeof value !== 'string') {
+    return value;
+  }
+
+  const strValue = value.trim();
+
+  const hasRPrefix = strValue.startsWith('R$') || strValue.startsWith('R $');
+  const hasComma = strValue.includes(',');
+  const hasDot = strValue.includes('.');
+
+  if (hasRPrefix || (hasComma && /^[\d,.\s]*$/.test(strValue.replace(/^R\$?\s*/, '')))) {
+    let cleaned = strValue
+      .replace(/^R\$?\s*/i, '')
+      .trim()
+      .replace(/,/g, '');
+
+    const numValue = parseFloat(cleaned);
+    return isNaN(numValue) ? value : numValue;
+  }
+
+  return value;
+};
+
 const applyDataTransformations = (row: any): any => {
   const transformedRow: any = {};
 
@@ -19,29 +43,27 @@ const applyDataTransformations = (row: any): any => {
     let transformedValue = value;
     const normalizedKey = normalizeColumnName(key);
 
+    transformedValue = cleanNumericValue(transformedValue);
+
     if (normalizedKey === 'numero do contrato salesforce' || normalizedKey === 'numerodocontratosalesforce') {
-      const strValue = value?.toString().trim() || '';
+      const strValue = transformedValue?.toString().trim() || '';
       if (strValue && !strValue.toUpperCase().startsWith('SF')) {
         transformedValue = 'SF' + strValue;
       } else {
         transformedValue = strValue;
       }
-    } else if (typeof value === 'string') {
-      let strValue = value.trim();
+    } else if (typeof transformedValue === 'string') {
+      let strValue = transformedValue.trim();
 
-      if (strValue.startsWith('R$')) {
-        transformedValue = strValue.substring(2).trim();
+      const lowerValue = strValue.toLowerCase();
+      if (lowerValue === 'sim') {
+        transformedValue = 'S';
+      } else if (lowerValue === 'não' || lowerValue === 'nao') {
+        transformedValue = 'N';
+      } else if (strValue.endsWith('%') && strValue.length > 1) {
+        transformedValue = strValue.slice(0, -1).trim();
       } else {
-        const lowerValue = strValue.toLowerCase();
-        if (lowerValue === 'sim') {
-          transformedValue = 'S';
-        } else if (lowerValue === 'não' || lowerValue === 'nao') {
-          transformedValue = 'N';
-        } else if (strValue.endsWith('%') && strValue.length > 1) {
-          transformedValue = strValue.slice(0, -1).trim();
-        } else {
-          transformedValue = strValue;
-        }
+        transformedValue = strValue;
       }
     }
 
@@ -156,25 +178,47 @@ export const validateColumnsAndData = (
         const realIssuesBefore: string[] = [];
         let codigoContratoIssuesCount = 0;
 
+        const normalizeBRL = (input: string) => {
+          // remove "R$" e espaços extras
+          let v = input.replace(/^R\$\s*/i, '').trim();
+        
+          // remove separador de milhar (.)
+          v = v.replace(/\./g, '');
+        
+          // padroniza decimal: "," -> "."
+          v = v.replace(/,/g, '.');
+        
+          return v;
+        };
+
         jsonData.forEach((row: any, rowIndex: number) => {
           Object.entries(row).forEach(([colName, value]) => {
             const strValue = value?.toString().trim() || '';
             const normalizedKey = normalizeColumnName(colName);
-
-            if (normalizedKey === 'numero do contrato salesforce' || normalizedKey === 'numerodocontratosalesforce') {
+        
+            if (
+              normalizedKey === 'numero do contrato salesforce' ||
+              normalizedKey === 'numerodocontratosalesforce'
+            ) {
               if (strValue && !strValue.toUpperCase().startsWith('SF')) {
                 codigoContratoIssuesCount++;
               }
             }
-
-            if (strValue.startsWith('R$')) {
-              realIssuesBefore.push(`Linha ${rowIndex + 2}, Coluna "${colName}": "${strValue}" → removerá "R$"`);
+        
+            if (/^R\$\s*/i.test(strValue)) {
+              const cleaned = normalizeBRL(strValue);
+        
+              realIssuesBefore.push(
+                `Linha ${rowIndex + 2}, Coluna "${colName}": "${strValue}" → "${cleaned}" (remove "R$", ajusta "," e ".")`
+              );
             }
-
+        
             if (strValue.endsWith('%') && strValue.length > 1) {
-              percentIssuesBefore.push(`Linha ${rowIndex + 2}, Coluna "${colName}": "${strValue}" → removerá "%"`);
+              percentIssuesBefore.push(
+                `Linha ${rowIndex + 2}, Coluna "${colName}": "${strValue}" → removerá "%"`
+              );
             }
-
+        
             const lowerValue = strValue.toLowerCase();
             if (lowerValue === 'sim') {
               simNaoIssuesBefore.push(`Linha ${rowIndex + 2}, Coluna "${colName}": "Sim" → "S"`);
@@ -499,6 +543,7 @@ const processEquipamentosAcessorios = (
 
       if (matchingKey) {
         let value = row[matchingKey];
+        value = cleanNumericValue(value);
         if (mapping.target === 'CodigoGrupoContrato' && value && !value.toString().toUpperCase().startsWith('SF')) {
           value = 'SF' + value;
         }
@@ -525,7 +570,7 @@ const processEquipamentosAcessorios = (
       bundleDevices.forEach(device => {
         bundleAccessories.forEach(accessory => {
           const transformedRow = transformRow(device.originalRow);
-          transformedRow.CodigoEquipamento = accessory.accessoryId;
+          transformedRow.CodigoEquipamento = cleanNumericValue(accessory.accessoryId);
 
           delete transformedRow.IdAcessorioProduto;
           delete transformedRow.BundleID;
@@ -598,6 +643,7 @@ const processEquipamentosServicos = (
 
       if (matchingKey) {
         let value = row[matchingKey];
+        value = cleanNumericValue(value);
         if (
           mapping.target === 'CodigoGrupoContrato' &&
           value &&
@@ -634,8 +680,7 @@ const processEquipamentosServicos = (
         bundleServices.forEach(service => {
           const transformedRow = transformRow(device.originalRow);
 
-          // antes: transformedRow.CodigoEquipamento = accessory.accessoryId;
-          transformedRow.CodigoServicoAdicional = service.serviceId;
+          transformedRow.CodigoServicoAdicional = cleanNumericValue(service.serviceId);
 
           // antes: IdAcessorioProduto -> agora: Id do Serviço (nome normalizado vira IdDoServico)
           delete transformedRow.IdDoServico;
@@ -706,6 +751,7 @@ const processEquipamentosCores = (
 
       if (matchingKey) {
         let value = row[matchingKey];
+        value = cleanNumericValue(value);
         if (
           mapping.target === 'CodigoGrupoContrato' &&
           value &&
@@ -724,7 +770,6 @@ const processEquipamentosCores = (
     return newRow;
   };
 
-  // monta um "map" rápido: bundleId -> lista de cores
   const colorsByBundleId = new Map<string, any[]>();
   colors.forEach(c => {
     const key = String(c.bundleId);
@@ -735,7 +780,6 @@ const processEquipamentosCores = (
 
   const resultRows: any[] = [];
 
-  // agora SEM excluir dispositivos sem cor: sempre gera pelo menos 1 linha por device
   devices.forEach(device => {
     const transformedBase = transformRow(device.originalRow);
 
@@ -743,7 +787,6 @@ const processEquipamentosCores = (
     const bundleColors = colorsByBundleId.get(bundleIdKey) ?? [];
 
     if (bundleColors.length === 0) {
-      // mantém a linha sem CodigoCor
       delete transformedBase.IdDaCor;
       delete transformedBase.BundleID;
       delete transformedBase.TipoRegistroProduto;
@@ -752,10 +795,9 @@ const processEquipamentosCores = (
       return;
     }
 
-    // se tiver mais de uma cor no mesmo bundle, duplica a linha (uma por cor)
     bundleColors.forEach(color => {
       const transformedRow = { ...transformedBase };
-      transformedRow.CodigoCor = color.colorId;
+      transformedRow.CodigoCor = cleanNumericValue(color.colorId);
 
       delete transformedRow.IdDaCor;
       delete transformedRow.BundleID;
@@ -885,7 +927,9 @@ export const processExcelFile = (
             }
 
             if (matchingKey && row[matchingKey] !== undefined) {
-              newRow[mapping.target] = row[matchingKey];
+              let value = row[matchingKey];
+              value = cleanNumericValue(value);
+              newRow[mapping.target] = value;
             }
           });
 
@@ -906,7 +950,7 @@ export const processExcelFile = (
 
           //metodoPagamento - ItensParametros
           const metodoPagamentoKey = Object.keys(row).find(key =>
-            normalizeColumnName(key) === normalizeColumnName('Método de Pagamento.')
+            normalizeColumnName(key) === normalizeColumnName('Método de pagamento')
           );
           const metodoPagamento = metodoPagamentoKey ? row[metodoPagamentoKey] : undefined;
           
