@@ -661,6 +661,7 @@ const processEquipamentosCores = (
       .toLowerCase()
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[\u0300-\u036f]/g, '')
       .replace(/\s+/g, '')
       .replace(/[()]/g, '');
   };
@@ -680,19 +681,15 @@ const processEquipamentosCores = (
     const bundleId = getFieldValue(row, 'Bundle ID');
     const idCor = getFieldValue(row, 'Id da Cor');
 
-    if (
-      tipoRegistro?.toString().trim() === 'IRIS_Cores' &&
-      bundleId &&
-      idCor
-    ) {
+    if (tipoRegistro?.toString().trim() === 'IRIS_Cores' && bundleId && idCor) {
       colors.push({
-        bundleId: bundleId,
+        bundleId,
         colorId: idCor,
         originalRow: row
       });
     } else if (tipoRegistro?.toString().trim() === 'IRIS_Dispositivo' && bundleId) {
       devices.push({
-        bundleId: bundleId,
+        bundleId,
         originalRow: row
       });
     }
@@ -727,38 +724,50 @@ const processEquipamentosCores = (
     return newRow;
   };
 
+  // monta um "map" rápido: bundleId -> lista de cores
+  const colorsByBundleId = new Map<string, any[]>();
+  colors.forEach(c => {
+    const key = String(c.bundleId);
+    const arr = colorsByBundleId.get(key) ?? [];
+    arr.push(c);
+    colorsByBundleId.set(key, arr);
+  });
+
   const resultRows: any[] = [];
 
-  const bundleIds = [
-    ...new Set([
-      ...devices.map(d => d.bundleId),
-      ...colors.map(c => c.bundleId)
-    ])
-  ];
+  // agora SEM excluir dispositivos sem cor: sempre gera pelo menos 1 linha por device
+  devices.forEach(device => {
+    const transformedBase = transformRow(device.originalRow);
 
-  bundleIds.forEach(bundleId => {
-    const bundleDevices = devices.filter(d => d.bundleId === bundleId);
-    const bundleColors = colors.filter(c => c.bundleId === bundleId);
+    const bundleIdKey = String(device.bundleId);
+    const bundleColors = colorsByBundleId.get(bundleIdKey) ?? [];
 
-    if (bundleDevices.length > 0 && bundleColors.length > 0) {
-      bundleDevices.forEach(device => {
-        bundleColors.forEach(color => {
-          const transformedRow = transformRow(device.originalRow);
+    if (bundleColors.length === 0) {
+      // mantém a linha sem CodigoCor
+      delete transformedBase.IdDaCor;
+      delete transformedBase.BundleID;
+      delete transformedBase.TipoRegistroProduto;
 
-          transformedRow.CodigoCor = color.colorId;
-
-          delete transformedRow.IdDaCor;
-          delete transformedRow.BundleID;
-          delete transformedRow.TipoRegistroProduto;
-
-          resultRows.push(transformedRow);
-        });
-      });
+      resultRows.push(transformedBase);
+      return;
     }
+
+    // se tiver mais de uma cor no mesmo bundle, duplica a linha (uma por cor)
+    bundleColors.forEach(color => {
+      const transformedRow = { ...transformedBase };
+      transformedRow.CodigoCor = color.colorId;
+
+      delete transformedRow.IdDaCor;
+      delete transformedRow.BundleID;
+      delete transformedRow.TipoRegistroProduto;
+
+      resultRows.push(transformedRow);
+    });
   });
 
   return resultRows;
 };
+
 
 
 export const processExcelFile = (
