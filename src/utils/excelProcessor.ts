@@ -262,7 +262,7 @@ export const validateColumns = (
   let expectedColumns: string[];
 
   if (isMultasDevolucoesAntecipadas) {
-    expectedColumns = ['Número do Contrato Salesforce', 'Distribuição de Linhas ID'];
+    expectedColumns = ['Número do Contrato Salesforce', 'Distribuição de Linhas ID 18'];
     for (let i = 1; i <= 10; i++) {
       expectedColumns.push(`Prazo mínimo para devolução (${i})`);
       expectedColumns.push(`% Multa por devolução antecipada (${i})`);
@@ -327,7 +327,7 @@ const processMultasDevolucoesAntecipadas = (row: any): any[] => {
     normalizeColumnName(key) === normalizeColumnName('Número do Contrato Salesforce')
   );
   const linhaKey = Object.keys(row).find(key =>
-    normalizeColumnName(key) === normalizeColumnName('Distribuição de Linhas ID')
+    normalizeColumnName(key) === normalizeColumnName('Distribuição de Linhas ID 18')
   );
 
   const baseData = {
@@ -412,7 +412,7 @@ const processPoolDePneus = (row: any): { pool: any[], poolItem: any[] } => {
     : numeroContrato;
 
   const linhasCotacao = getFieldValue('Linha de cotação ID');
-  const distribuicaoLinhas = getFieldValue('Distribuição de Linhas ID');
+  const distribuicaoLinhas = getFieldValue('Distribuição de Linhas ID 18');
   const dataCriacao = getFieldValue('Data de criação');
   const prazoContratual = parseInt(getFieldValue('Prazo Contratual')) || 0;
   const quantidade = getFieldValue('Quantidade');
