@@ -13,28 +13,35 @@ const normalizeColumnName = (name: string): string => {
 };
 
 const cleanNumericValue = (value: any): any => {
-  if (typeof value !== 'string') {
-    return value;
+  if (typeof value !== "string") return value;
+
+  const raw = value.trim();
+  if (!raw) return value;
+
+  // remove "R$" (com ou sem espaço)
+  let v = raw.replace(/^R\$\s*/i, "").replace(/\s+/g, "");
+
+  // Se parece pt-BR: 1.234.567,89 ou 123,45
+  const looksPtBR =
+    /^-?\d{1,3}(\.\d{3})*(,\d+)?$/.test(v) || /^-?\d+(,\d+)?$/.test(v);
+
+  if (looksPtBR) {
+    // remove milhares "." e troca decimal "," por "."
+    v = v.replace(/\./g, "").replace(/,/g, ".");
+    const n = Number(v);
+    return Number.isFinite(n) ? n : value;
   }
 
-  const strValue = value.trim();
-
-  const hasRPrefix = strValue.startsWith('R$') || strValue.startsWith('R $');
-  const hasComma = strValue.includes(',');
-  const hasDot = strValue.includes('.');
-
-  if (hasRPrefix || (hasComma && /^[\d,.\s]*$/.test(strValue.replace(/^R\$?\s*/, '')))) {
-    let cleaned = strValue
-      .replace(/^R\$?\s*/i, '')
-      .trim()
-      .replace(/,/g, '');
-
-    const numValue = parseFloat(cleaned);
-    return isNaN(numValue) ? value : numValue;
+  // Se já parece formato "en": 1234.56
+  const looksEn = /^-?\d+(\.\d+)?$/.test(v);
+  if (looksEn) {
+    const n = Number(v);
+    return Number.isFinite(n) ? n : value;
   }
 
   return value;
 };
+
 
 const applyDataTransformations = (row: any): any => {
   const transformedRow: any = {};
@@ -411,7 +418,7 @@ const processPoolDePneus = (row: any): { pool: any[], poolItem: any[] } => {
     ? 'SF' + numeroContrato
     : numeroContrato;
 
-  const linhasCotacao = getFieldValue('Linha de cotação ID');
+  const linhasCotacao = getFieldValue('Linha de cotação ID 18');
   const distribuicaoLinhas = getFieldValue('Distribuição de Linhas ID 18');
   const dataCriacao = getFieldValue('Data de criação');
   const prazoContratual = parseInt(getFieldValue('Prazo Contratual')) || 0;

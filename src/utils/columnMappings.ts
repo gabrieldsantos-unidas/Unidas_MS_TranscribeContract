@@ -283,7 +283,7 @@ export const contratosGruposItensParametrosMapping: ColumnMapping[] = [
   { original: 'Contato Faturamento: Nome completo', target: 'NomeContatoFaturamento' },
   { original: 'Email Faturamento', target: 'EmailContatoFaturamento' },
   { original: 'Telefone Faturamento', target: 'TelefoneContatoFaturamento' },
-  { original: 'Linha de cotação ID', target: 'IdCotacaoItem' },
+  { original: 'Linha de cotação ID 18', target: 'IdCotacaoItem' },
   { original: 'Seguro casco', target: 'SeguroCasco' },
   { original: 'Tipo Seguro Casco', target: 'TipoSeguro' },
   { original: 'Período de Reajuste', target: 'ProximoReajuste' },
@@ -348,7 +348,7 @@ export const contratosGruposVeiculosModelosClientesFixedColumns: FixedColumn[] =
 ];
 
 export const poolDePneusMapping: ColumnMapping[] = [
-  { original: 'Linha de cotação ID', target: 'CodigoContratoGrupoPool' },
+  { original: 'Linha de cotação ID 18', target: 'CodigoContratoGrupoPool' },
   { original: 'Número do Contrato Salesforce', target: 'CodigoGrupoContrato' },
   { original: 'Número do Contrato Salesforce', target: 'NumeroTermoAceite' },
   { original: 'Data de criação', target: 'DataInicio' },
