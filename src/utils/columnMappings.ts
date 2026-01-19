@@ -22,7 +22,7 @@ export const contratosGruposMapping: ColumnMapping[] = [
   { original: 'Tipo Taxa administrativa de multas', target: 'ModoTaxaAdministrativaMulta' },
   { original: 'Taxa administrativa de multas', target: 'ValorTaxaAdministrativaMulta' },
   { original: 'Taxa administrativa de multas', target: 'PercentualTaxaAdministrativaMulta' },
-  { original: 'Código prazo de pagamento locavia', target: 'CodigoCondicaoPagamento' },
+  { original: 'Código Condição de Pagamento', target: 'CodigoCondicaoPagamento' },
   { original: 'Ciclo de Faturamento (data corte)', target: 'DiaFaturamento' },
   { original: 'Percentual de reajuste', target: 'PercReajusteIndice' },
   { original: 'Percentual de reajuste', target: 'PercFixoReajuste' },
@@ -200,7 +200,7 @@ export const contratosGruposItensManutencaoParametrosMapping: ColumnMapping[] = 
   { original: 'Distribuição de Linhas ID 18', target: 'CodigoGrupoContratoItem' },
   { original: 'Quantidade de pneus', target: 'QuantidadePneuContratado' },
   { original: 'Responsabilidade troca de pneus', target: 'ResponsabilidadeTrocaPneu' },
-  { original: 'Responsabilidade troca pneus (pesados)', target: 'ResponsabilidadeTrocaPneuPesados' },
+  { original: 'Responsabilidade troca de pneus Pesados', target: 'ResponsabilidadeTrocaPneuPesados' },
   { original: 'Manutenção', target: 'CodigoContratosGruposTipoManutencao' },
   { original: 'SLA Liberacao Reserva Capital (Manut.)', target: 'SLAReservaCapital' },
   { original: 'SLA Liberacao Reserva Interior (Manut.)', target: 'SLAReservaInterior' },
@@ -353,7 +353,7 @@ export const contratosGruposVeiculosModelosClientesFixedColumns: FixedColumn[] =
 ];
 
 export const poolDePneusMapping: ColumnMapping[] = [
-  { original: 'Linha de cotação ID', target: 'CodigoContratoGrupoPool' },
+  { original: 'Linha de cotação ID 18', target: 'CodigoContratoGrupoPool' },
   { original: 'Número do Contrato Salesforce', target: 'CodigoGrupoContrato' },
   { original: 'Número do Contrato Salesforce', target: 'NumeroTermoAceite' },
   { original: 'Data de criação', target: 'DataInicio' },
@@ -365,7 +365,7 @@ export const poolDePneusMapping: ColumnMapping[] = [
   { original: 'Uso Mensal', target: 'UsoMensal' },
   { original: 'Quantidade diárias de reserva', target: 'QuantidadeDiariasDeReserva' },
   { original: 'Quantidade', target: 'QuantidadeVeiculo' },
-  { original: 'Distribuição de Linhas ID', target: 'CodigoContratoGrupoPoolItem' },
+  { original: 'Distribuição de Linhas ID 18', target: 'CodigoContratoGrupoPoolItem' },
 ];
 
 export const poolDePneusFixedColumns: FixedColumn[] = [
