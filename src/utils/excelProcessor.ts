@@ -18,21 +18,28 @@ const cleanNumericValue = (value: any): any => {
   const raw = value.trim();
   if (!raw) return value;
 
-  // remove "R$" (com ou sem espaço)
+  // remove "R$" (com ou sem espaço) e remove espaços internos
   let v = raw.replace(/^R\$\s*/i, "").replace(/\s+/g, "");
 
-  // Se parece pt-BR: 1.234.567,89 ou 123,45
+  // --- 1) pt-BR: 1.234.567,89  OU  123,45
   const looksPtBR =
     /^-?\d{1,3}(\.\d{3})*(,\d+)?$/.test(v) || /^-?\d+(,\d+)?$/.test(v);
 
   if (looksPtBR) {
-    // remove milhares "." e troca decimal "," por "."
     v = v.replace(/\./g, "").replace(/,/g, ".");
     const n = Number(v);
     return Number.isFinite(n) ? n : value;
   }
 
-  // Se já parece formato "en": 1234.56
+  // --- 2) en-US com milhar por vírgula: 1,234,567.89  OU  1,860.00
+  const looksEnWithThousands = /^-?\d{1,3}(,\d{3})+(\.\d+)?$/.test(v);
+  if (looksEnWithThousands) {
+    v = v.replace(/,/g, "");
+    const n = Number(v);
+    return Number.isFinite(n) ? n : value;
+  }
+
+  // --- 3) en simples: 1234.56
   const looksEn = /^-?\d+(\.\d+)?$/.test(v);
   if (looksEn) {
     const n = Number(v);
@@ -418,8 +425,8 @@ const processPoolDePneus = (row: any): { pool: any[], poolItem: any[] } => {
     ? 'SF' + numeroContrato
     : numeroContrato;
 
-  const linhasCotacao = getFieldValue('Linha de cotação ID 18');
-  const distribuicaoLinhas = getFieldValue('Distribuição de Linhas ID 18');
+  const linhasCotacao = getFieldValue('Linha de cotação ID');
+  const distribuicaoLinhas = getFieldValue('Distribuição de Linhas ID');
   const dataCriacao = getFieldValue('Data de criação');
   const prazoContratual = parseInt(getFieldValue('Prazo Contratual')) || 0;
   const quantidade = getFieldValue('Quantidade');
@@ -469,7 +476,7 @@ const processPoolDePneus = (row: any): { pool: any[], poolItem: any[] } => {
     const conditionValue = pool.condition?.toString().toLowerCase().trim();
     if (conditionValue === 'sim' || conditionValue === 's') {
       poolResults.push({
-        CodigoContratoGrupoPool: linhasCotacao,
+        CodigoContratoGrupoPool: linhasCotacao + pool.tipo,
         CodigoGrupoContrato: codigoContratoFormatted,
         CodigoProdutoServico: 2,
         Tipo: pool.tipo,
@@ -482,7 +489,7 @@ const processPoolDePneus = (row: any): { pool: any[], poolItem: any[] } => {
 
       poolItemResults.push({
         CodigoContratoGrupoPoolItem: distribuicaoLinhas,
-        CodigoContratoGrupoPool: linhasCotacao,
+        CodigoContratoGrupoPool: linhasCotacao + pool.tipo,
         CodigoGrupoContratoItem: distribuicaoLinhas,
         CodigoContrato: codigoContratoFormatted
       });
@@ -967,6 +974,15 @@ export const processExcelFile = (
               metodoPagamento === 'Depósito' ? 319 :
               metodoPagamento === 'Boleto' ? 320 :
               320;
+          }
+
+          //contratos grupos
+          if (newRow['Descricao'] !== undefined) {
+            const contratoSF = String(newRow['CodigoContratoAX']).trim();
+
+            if (contratoSF !== '') {
+              newRow['Descricao'] = (newRow['Descricao'] + newRow['CodigoContratoAX']) || '';
+            }
           }
 
 

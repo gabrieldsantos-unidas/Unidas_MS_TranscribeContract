@@ -28,7 +28,7 @@ export const contratosGruposMapping: ColumnMapping[] = [
   { original: 'Percentual de reajuste', target: 'PercFixoReajuste' },
   { original: 'Observações', target: 'ObservacaoContrato' },
   { original: 'Locação Mensal ou Safra?', target: 'TipoFaturamento' },
-  { original: 'ID da oportunidade', target: 'IdOportunidade' },
+  { original: 'Oportunidade ID 18', target: 'IdOportunidade' },
   { original: 'Encargos por atraso no pagamento', target: 'CodigoIntegracaoSAPBrimTaxaJuro' },
   { original: 'Dia de Envio Medição', target: 'DiaCicloMedicao' },
   { original: 'Tipo Taxa administrativa de avarias', target: 'ModoTaxaAdministrativaAvaria' },
@@ -47,6 +47,7 @@ export const contratosGruposFixedColumns: FixedColumn[] = [
   { name: 'TipoContrato', value: 'Fleet' },
   { name: 'CodigoEmpresa', value: '75609123000123' },
   { name: 'CodigoSegmentacaoNegocio', value: '1' },
+  { name: 'Descricao', value: 'Contrato Criado Manualmente - ' },
 ];
 
 export const contratosGruposTransformationRules: TransformationRule[] = [
@@ -83,8 +84,8 @@ export const contratosGruposIntegracoesSalesMapping: ColumnMapping[] = [
   { original: 'Número do Contrato Salesforce', target: 'CodigoGrupoContrato' },
   { original: 'Vinculo do Contrato', target: 'VinculoContrato' },
   { original: 'Número do Contrato Salesforce', target: 'NumeroContrato' },
-  { original: 'ID da oportunidade', target: 'NumeroProposta' },
-  { original: 'ID da oportunidade', target: 'NumeroTermoAceite' },
+  { original: 'Oportunidade ID 18', target: 'NumeroProposta' },
+  { original: 'Oportunidade ID 18', target: 'NumeroTermoAceite' },
 ];
 
 export const contratosGruposIntegracoesSalesFixedColumns: FixedColumn[] = [];
@@ -166,7 +167,10 @@ export const contratosGruposItensEquipamentosMapping: ColumnMapping[] = [
   { original: 'Tipo de Registro do Produto', target: 'TipoRegistroProduto' },
 ];
 
-export const contratosGruposItensEquipamentosFixedColumns: FixedColumn[] = [];
+export const contratosGruposItensEquipamentosFixedColumns: FixedColumn[] = [
+  { name: 'Serie', value: 'N' },
+  { name: 'Opcional', value: 'S' },
+];
 
 export const contratosGruposItensFaturamentoParametrosMapping: ColumnMapping[] = [
   { original: 'Número do Contrato Salesforce', target: 'CodigoGrupoContrato' },
@@ -184,8 +188,8 @@ export const contratosGruposItensFaturamentoParametrosFixedColumns: FixedColumn[
 export const contratosGruposItensIntegracoesSalesforceMapping: ColumnMapping[] = [
   { original: 'Número do Contrato Salesforce', target: 'CodigoGrupoContrato' },
   { original: 'Distribuição de Linhas ID 18', target: 'CodigoGrupoContratoItem' },
-  { original: 'ID da oportunidade', target: 'NumeroProposta' },
-  { original: 'ID da oportunidade', target: 'NumeroTermoAceite' },
+  { original: 'Oportunidade ID 18', target: 'NumeroProposta' },
+  { original: 'Oportunidade ID 18', target: 'NumeroTermoAceite' },
 ];
 
 export const contratosGruposItensIntegracoesSalesforceFixedColumns: FixedColumn[] = [];
@@ -348,7 +352,7 @@ export const contratosGruposVeiculosModelosClientesFixedColumns: FixedColumn[] =
 ];
 
 export const poolDePneusMapping: ColumnMapping[] = [
-  { original: 'Linha de cotação ID 18', target: 'CodigoContratoGrupoPool' },
+  { original: 'Linha de cotação ID', target: 'CodigoContratoGrupoPool' },
   { original: 'Número do Contrato Salesforce', target: 'CodigoGrupoContrato' },
   { original: 'Número do Contrato Salesforce', target: 'NumeroTermoAceite' },
   { original: 'Data de criação', target: 'DataInicio' },
@@ -360,9 +364,25 @@ export const poolDePneusMapping: ColumnMapping[] = [
   { original: 'Uso Mensal', target: 'UsoMensal' },
   { original: 'Quantidade diárias de reserva', target: 'QuantidadeDiariasDeReserva' },
   { original: 'Quantidade', target: 'QuantidadeVeiculo' },
-  { original: 'Distribuição de Linhas ID 18', target: 'CodigoContratoGrupoPoolItem' },
+  { original: 'Distribuição de Linhas ID', target: 'CodigoContratoGrupoPoolItem' },
 ];
 
 export const poolDePneusFixedColumns: FixedColumn[] = [
   { name: 'CodigoProdutoServico', value: 2 },
+];
+
+export const contratosGruposItensFormasPagamentoMapping: ColumnMapping[] = [
+  { original: 'Número do Contrato Salesforce', target: 'CodigoGrupoContrato' },
+  { original: 'Método de Pagamento.', target: 'CodigoFormaPagamento' },
+];
+
+export const contratosGruposItensFormasPagamentoFixedColumns: FixedColumn[] = [
+  { name: 'CodigoAdministradoraCartao', value: 'Null' },
+  { name: 'NumeroCartao', value: 'Null' },
+  { name: 'ValidadeCartao', value: 'Null' },
+  { name: 'CodigoPreAutorizacao', value: 'Null' },
+  { name: 'Tipo', value: 'P' },
+  { name: 'Valor', value: 'Null' },
+  { name: 'Parcelas', value: '1' },
+  { name: 'Intervalo', value: '0' },
 ];

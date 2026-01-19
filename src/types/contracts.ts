@@ -17,7 +17,8 @@ export type ContractItemType =
   | 'ContratosGruposItensParametros'
   | 'ContratosGruposItensServicosAdicionais'
   | 'ContratosGruposVeiculosModelosClientes'
-  | 'PoolDePneus';
+  | 'PoolDePneus'
+  | 'ContratosGruposItensFormasPagamento';
 
 export interface ColumnMapping {
   original: string;

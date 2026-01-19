@@ -30,6 +30,8 @@ import {
   contratosGruposVeiculosModelosClientesFixedColumns,
   poolDePneusMapping,
   poolDePneusFixedColumns,
+  contratosGruposItensFormasPagamentoMapping,
+  contratosGruposItensFormasPagamentoFixedColumns,
 } from '../utils/columnMappings';
 
 export const ContractItems = () => {
@@ -73,7 +75,13 @@ export const ContractItems = () => {
       value: 'ContratosGruposVeiculosModelosClientes',
       label: 'Contratos Grupos Veículos Modelos Clientes'
     },
-    { value: 'PoolDePneus', label: 'Pool de Pneus' },
+    { value: 'PoolDePneus', 
+      label: 'Pool de Pneus' 
+    },
+    {
+      value: 'ContratosGruposItensFormasPagamento',
+      label: 'Contratos Grupos Itens Formas Pagamento'
+    },
   ];
 
   const getMappingForType = (type: ContractItemType) => {
@@ -142,6 +150,12 @@ export const ContractItems = () => {
         return {
           mappings: poolDePneusMapping,
           fixedColumns: poolDePneusFixedColumns,
+          transformationRules: []
+        };
+      case 'ContratosGruposItensFormasPagamento':
+        return {
+          mappings: contratosGruposItensFormasPagamentoMapping,
+          fixedColumns: contratosGruposItensFormasPagamentoFixedColumns,
           transformationRules: []
         };
       default:

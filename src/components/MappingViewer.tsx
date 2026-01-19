@@ -35,6 +35,9 @@ import {
   contratosGruposVeiculosModelosClientesFixedColumns,
   poolDePneusMapping,
   poolDePneusFixedColumns,
+  contratosGruposItensFormasPagamentoMapping,
+  contratosGruposItensFormasPagamentoFixedColumns,
+  
 } from '../utils/columnMappings';
 
 interface MappingViewerProps {
@@ -132,6 +135,12 @@ export const MappingViewer = ({ contractType }: MappingViewerProps) => {
         return {
           mappings: poolDePneusMapping,
           fixedColumns: poolDePneusFixedColumns,
+          transformationRules: []
+        };
+      case 'ContratosGruposItensFormasPagamento':
+        return {
+          mappings: contratosGruposItensFormasPagamentoMapping,
+          fixedColumns: contratosGruposItensFormasPagamentoFixedColumns,
           transformationRules: []
         };
       default:
