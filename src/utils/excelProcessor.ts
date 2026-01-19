@@ -425,8 +425,8 @@ const processPoolDePneus = (row: any): { pool: any[], poolItem: any[] } => {
     ? 'SF' + numeroContrato
     : numeroContrato;
 
-  const linhasCotacao = getFieldValue('Linha de cotação ID');
-  const distribuicaoLinhas = getFieldValue('Distribuição de Linhas ID');
+  const linhasCotacao = getFieldValue('Linha de cotação ID 18');
+  const distribuicaoLinhas = getFieldValue('Distribuição de Linhas ID 18');
   const dataCriacao = getFieldValue('Data de criação');
   const prazoContratual = parseInt(getFieldValue('Prazo Contratual')) || 0;
   const quantidade = getFieldValue('Quantidade');
