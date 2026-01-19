@@ -126,6 +126,7 @@ export const contratosGruposItensMapping: ColumnMapping[] = [
   { original: 'Id da Cor', target: 'IdDaCor' },
   { original: 'CNPJ/CPF', target: 'CodigoCliente' },
   { original: 'Valor locação com serviços', target: 'ValorPeriodoLiquido' },
+  { original: 'Valor locação com serviços', target: 'ValorTarifa' },
   { original: 'Bundle ID', target: 'BundleID' },
   { original: 'Tipo de Registro do Produto', target: 'TipoRegistroProduto' },
 ];
