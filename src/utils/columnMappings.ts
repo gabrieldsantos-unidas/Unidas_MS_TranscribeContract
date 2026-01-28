@@ -200,7 +200,7 @@ export const contratosGruposItensManutencaoParametrosMapping: ColumnMapping[] = 
   { original: 'Distribuição de Linhas ID 18', target: 'CodigoGrupoContratoItem' },
   { original: 'Quantidade de pneus', target: 'QuantidadePneuContratado' },
   { original: 'Responsabilidade troca de pneus', target: 'ResponsabilidadeTrocaPneu' },
-  { original: 'Responsabilidade troca de pneus', target: 'ResponsabilidadeTrocaPneuPesados' },
+  { original: 'Responsabilidade troca de pneus Pesados', target: 'ResponsabilidadeTrocaPneuPesados' },
   { original: 'Manutenção', target: 'CodigoContratosGruposTipoManutencao' },
   { original: 'SLA Liberacao Reserva Capital (Manut.)', target: 'SLAReservaCapital' },
   { original: 'SLA Liberacao Reserva Interior (Manut.)', target: 'SLAReservaInterior' },
@@ -215,7 +215,6 @@ export const contratosGruposItensManutencaoParametrosTransformationRules: Transf
   { field: 'CodigoContratosGruposTipoManutencao', condition: 'Preventiva Plus', trueValue: 3, falseValue: 0 },
   { field: 'CodigoContratosGruposTipoManutencao', condition: 'Preventiva+Corretiva', trueValue: 4, falseValue: 0 },
   { field: 'CodigoContratosGruposTipoManutencao', condition: 'Personalizada', trueValue: 5, falseValue: 0 },
-  { field: 'ResponsabilidadeTrocaPneuPesados', condition: 'Unidas', trueValue: 'U', falseValue: 'C' },
 ];
 
 export const contratosGruposItensMultasDevolucoesAntecipadasMapping: ColumnMapping[] = [

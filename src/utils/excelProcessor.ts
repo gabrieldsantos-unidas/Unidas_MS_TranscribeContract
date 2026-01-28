@@ -12,44 +12,6 @@ const normalizeColumnName = (name: string): string => {
   return normalized;
 };
 
-const findMatchingColumns = (row: any, normalizedName: string): string[] => {
-  return Object.keys(row).filter(key =>
-    normalizeColumnName(key) === normalizedName
-  );
-};
-
-const handleResponsabilidadeTrocaPneus = (row: any, mapping: ColumnMapping): { target: string; value: any } | null => {
-  const normalizedSearch = normalizeColumnName(mapping.original);
-  const matchingKeys = findMatchingColumns(row, normalizedSearch);
-
-  if (matchingKeys.length === 0) return null;
-
-  for (const key of matchingKeys) {
-    const value = row[key];
-    if (value === undefined || value === null || value === '') continue;
-
-    const strValue = String(value).trim().toUpperCase();
-
-    if (mapping.target === 'ResponsabilidadeTrocaPneu') {
-      if (strValue === 'S' || strValue === 'N') {
-        return { target: mapping.target, value: row[key] };
-      }
-    }
-
-    if (mapping.target === 'ResponsabilidadeTrocaPneuPesados') {
-      if (strValue === 'CLIENTE' || strValue === 'UNIDAS' || strValue === 'U' || strValue === 'C') {
-        return { target: mapping.target, value: row[key] };
-      }
-    }
-  }
-
-  if (matchingKeys.length === 1) {
-    return { target: mapping.target, value: row[matchingKeys[0]] };
-  }
-
-  return null;
-};
-
 const cleanNumericValue = (value: any): any => {
   if (typeof value !== "string") return value;
 
@@ -964,16 +926,6 @@ export const processExcelFile = (
           const newRow: any = {};
 
           mappings.forEach((mapping) => {
-            if (mapping.target === 'ResponsabilidadeTrocaPneu' || mapping.target === 'ResponsabilidadeTrocaPneuPesados') {
-              const result = handleResponsabilidadeTrocaPneus(row, mapping);
-              if (result) {
-                let value = result.value;
-                value = cleanNumericValue(value);
-                newRow[result.target] = value;
-              }
-              return;
-            }
-
             const normalizedExpected = normalizeColumnName(mapping.original);
             const matchingKey = Object.keys(row).find(key =>
               normalizeColumnName(key) === normalizedExpected
